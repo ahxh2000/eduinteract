@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { FaArrowLeft, FaHome } from 'react-icons/fa';
-import Link from 'next/link';
 import { toolService } from '@/lib/database';
 import { Tool } from '@/types/database';
 import { subjectConfig } from '@/lib/subjectConfig';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function ToolPage() {
   const params = useParams();
@@ -14,6 +14,7 @@ export default function ToolPage() {
   const [tool, setTool] = useState<Tool | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   useEffect(() => {
     const fetchTool = async () => {
@@ -54,9 +55,9 @@ export default function ToolPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">工具不存在</h1>
           <p className="text-gray-600 mb-6">抱歉，您访问的工具不存在或已被删除。</p>
-          <Link href="/" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors">
+          <a href="/" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors">
             返回首页
-          </Link>
+          </a>
         </div>
       </div>
     );
@@ -68,30 +69,7 @@ export default function ToolPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors">
-                <FaArrowLeft className="text-sm" />
-                <span>返回首页</span>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-                <span className="text-sm">🎓</span>
-              </div>
-              <span className="text-lg font-bold text-gray-700">EduInteract</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors">
-                <FaHome className="text-sm" />
-                <span>首页</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* 主要内容 */}
       <main className="container mx-auto px-4 py-8">
@@ -120,33 +98,49 @@ export default function ToolPage() {
               <h2 className="text-lg font-semibold text-gray-800">工具预览</h2>
             </div>
             <div className="p-4">
-              <div className="bg-gray-100 rounded-lg p-8 text-center">
-                <p className="text-gray-600 mb-4">工具内容将在这里显示</p>
-                <p className="text-sm text-gray-500">文件URL: {tool.file_url}</p>
-                <div className="mt-4">
-                  <a
-                    href={tool.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors inline-block"
-                  >
-                    在新窗口打开
-                  </a>
+              {tool.file_url ? (
+                <div className="w-full relative">
+                  {iframeLoading && (
+                    <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center z-10">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-gray-600">正在加载工具...</p>
+                      </div>
+                    </div>
+                  )}
+                  <iframe
+                    src={tool.file_url}
+                    className="w-full h-[600px] border-0 rounded-lg"
+                    title={tool.title}
+                    allowFullScreen
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                    onLoad={() => setIframeLoading(false)}
+                    onError={() => setIframeLoading(false)}
+                  />
+                  <div className="mt-4 text-center">
+                    <a
+                      href={tool.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors inline-block"
+                    >
+                      在新窗口打开
+                    </a>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-gray-100 rounded-lg p-8 text-center">
+                  <p className="text-gray-600 mb-4">工具内容将在这里显示</p>
+                  <p className="text-sm text-gray-500">暂无文件URL</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </main>
 
       {/* 页脚 */}
-      <footer className="bg-white border-t mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-gray-500 text-sm">
-            <p>© 2025 EduInteract. 保留所有权利。</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 } 

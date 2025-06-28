@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
-import { FaArrowRight, FaSearch, FaSlidersH, FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUpload } from "react-icons/fa";
+import { FaArrowRight, FaSearch, FaSlidersH, FaUpload } from "react-icons/fa";
 import Link from "next/link";
 import { Tool } from "@/types/database";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // 学科配置
 const subjectConfig = {
@@ -40,20 +42,6 @@ function SubjectFilter({ selected, onSelect }: { selected: string; onSelect: (ke
     </div>
   );
 }
-
-// 工具卡片静态数据
-const tools = [
-  { title: "函数图像绘制器", subject: "math", desc: "直观绘制各种函数图像，支持参数调整，帮助学生理解函数性质与图像变化规律。" },
-  { title: "几何图形构造器", subject: "math", desc: "交互式构造几何图形，测量角度与距离，探索几何定理，培养空间想象能力。" },
-  { title: "电路模拟器", subject: "physics", desc: "虚拟搭建电路，模拟电流电压变化，直观理解欧姆定律和电路原理。" },
-  { title: "力学模拟器", subject: "physics", desc: "模拟物体受力运动，分析速度、加速度与力的关系，理解牛顿运动定律。" },
-  { title: "元素周期表互动工具", subject: "chemistry", desc: "交互式元素周期表，查看元素特性、电子排布、化学性质及相关化合物信息。" },
-  { title: "化学反应模拟器", subject: "chemistry", desc: "虚拟模拟化学反应过程，观察物质变化与能量转换，安全演示危险化学反应。" },
-  { title: "细胞结构探索工具", subject: "biology", desc: "3D交互式细胞结构模型，探索动植物细胞组成，了解细胞器功能与细胞生命活动。" },
-  { title: "遗传规律模拟器", subject: "biology", desc: "模拟孟德尔遗传实验，可视化基因分离与自由组合规律，理解遗传概率计算。" },
-  { title: "3D地球模型", subject: "geography", desc: "交互式3D地球模型，查看地形地貌、气候分布、板块构造，探索地球奥秘。" },
-  { title: "历史时间轴", subject: "history", desc: "交互式历史时间轴，探索各文明发展历程，关联重要历史事件与人物。" },
-];
 
 function ToolCard({ tool }: { tool: Tool }) {
   // 从本地配置获取样式信息
@@ -146,39 +134,7 @@ export default function Home() {
   return (
     <div className="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
       {/* 导航栏 */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm transition-all duration-300">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
-            {/* 网站Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
-                <span className="text-xl">🎓</span>
-              </div>
-              <span className="text-xl font-bold text-neutral-700">EduInteract</span>
-            </Link>
-            {/* 桌面端导航 */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-primary font-medium border-b-2 border-primary pb-1">首页</Link>
-              <Link href="/fileupload" className="text-neutral-600 hover:text-primary transition-colors duration-200 flex items-center">
-                <FaUpload className="mr-1" />
-                上传工具
-              </Link>
-              <a href="#" className="text-neutral-600 hover:text-primary transition-colors duration-200">关于我们</a>
-              <a href="#" className="text-neutral-600 hover:text-primary transition-colors duration-200">联系我们</a>
-            </nav>
-            {/* 搜索和移动端菜单按钮 */}
-            <div className="flex items-center space-x-4">
-              <div className="relative hidden md:block">
-                <input type="text" placeholder="搜索教学工具..." className="pl-10 pr-4 py-2 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary w-48 md:w-64 transition-all duration-200" />
-                <span className="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-              </div>
-              <button className="md:hidden text-neutral-600">
-                <span className="fa fa-bars text-xl" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-grow">
         {/* 英雄区域 */}
@@ -209,6 +165,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        
         {/* 学科筛选和搜索 */}
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -227,15 +184,28 @@ export default function Home() {
             </div>
           </div>
         </section>
+        
         {/* 工具展示区 */}
         <section id="tools" className="py-12 bg-neutral-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid-masonry" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',gridGap:'1.5rem',gridAutoFlow:'dense'}}>
-              {filteredTools.map(tool => <ToolCard key={tool.title} tool={tool} />)}
-            </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                <p className="text-gray-600">正在加载工具...</p>
+              </div>
+            ) : filteredTools.length > 0 ? (
+              <div className="grid-masonry" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',gridGap:'1.5rem',gridAutoFlow:'dense'}}>
+                {filteredTools.map(tool => <ToolCard key={tool.id} tool={tool} />)}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600">暂无工具数据</p>
+              </div>
+            )}
           </div>
         </section>
-        {/* 统计区块 */}
+        
+        {/* 统计区块
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -248,94 +218,13 @@ export default function Home() {
             </div>
           </div>
         </section>
+         */}
         {/* 订阅区块 */}
         <SubscribeSection />
-        
       </main>
 
       {/* 页脚 */}
-      <footer className="bg-neutral-800 text-white pt-16 pb-8 mt-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {/* 简介区块 */}
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-primary">
-                  <span className="text-xl">🎓</span>
-                </div>
-                <span className="text-xl font-bold">EduInteract</span>
-              </div>
-              <p className="text-neutral-400 mb-6">为教育工作者和学生提供高质量的互动教学工具，助力打造更高效、更有趣的学习体验。</p>
-              <div className="flex space-x-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
-                  <FaWeixin className="text-xl" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
-                  <FaWeibo className="text-xl" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
-                  <FaQq className="text-xl" />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center hover:bg-primary transition-colors duration-300">
-                  <FaYoutube className="text-xl" />
-                </a>
-              </div>
-            </div>
-            {/* 快速链接区块 */}
-            <div>
-              <h3 className="text-lg font-bold mb-6">快速链接</h3>
-              <ul className="space-y-3">
-                <li><Link href="/" className="text-neutral-400 hover:text-primary transition-colors duration-200">首页</Link></li>
-                <li><Link href="/fileupload" className="text-neutral-400 hover:text-primary transition-colors duration-200">上传工具</Link></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">所有工具</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">教学案例</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">关于我们</a></li>
-              </ul>
-            </div>
-            {/* 学科分类区块 */}
-            <div>
-              <h3 className="text-lg font-bold mb-6">学科分类</h3>
-              <ul className="space-y-3">
-                {Object.entries(subjectConfig).map(([key, config]) => (
-                  <li key={key}>
-                    <a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">
-                      {config.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {/* 联系我们区块 */}
-            <div>
-              <h3 className="text-lg font-bold mb-6">联系我们</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start space-x-3">
-                  <FaMapMarkerAlt className="mt-1 text-neutral-400" />
-                  <span className="text-neutral-400">北京市海淀区中关村大街1号</span>
-                </li>
-                <li className="flex items-center space-x-3">
-                  <FaPhone className="text-neutral-400" />
-                  <span className="text-neutral-400">+86 10 8888 7777</span>
-                </li>
-                <li className="flex items-center space-x-3">
-                  <FaEnvelope className="text-neutral-400" />
-                  <span className="text-neutral-400">contact@eduinteract.com</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-neutral-700 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-neutral-500 text-sm mb-4 md:mb-0">© 2025 EduInteract. 保留所有权利。</p>
-              <div className="flex space-x-6">
-                <a href="#" className="text-neutral-500 text-sm hover:text-primary transition-colors duration-200">隐私政策</a>
-                <a href="#" className="text-neutral-500 text-sm hover:text-primary transition-colors duration-200">使用条款</a>
-                <a href="#" className="text-neutral-500 text-sm hover:text-primary transition-colors duration-200">Cookie政策</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

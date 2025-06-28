@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import ToolUpload from '@/components/ToolUpload';
-import { FaArrowLeft, FaHome } from 'react-icons/fa';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function FileUploadPage() {
   const [uploadedToolId, setUploadedToolId] = useState<string | null>(null);
@@ -16,30 +17,7 @@ export default function FileUploadPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 导航栏 */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <a href="/" className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors">
-                <FaArrowLeft className="text-sm" />
-                <span>返回首页</span>
-              </a>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-                <span className="text-sm">🎓</span>
-              </div>
-              <span className="text-lg font-bold text-gray-700">EduInteract</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <a href="/" className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors">
-                <FaHome className="text-sm" />
-                <span>首页</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
+<Header/>
 
       {/* 主要内容 */}
       <main className="container mx-auto px-4 py-8">
@@ -117,14 +95,7 @@ export default function FileUploadPage() {
       </main>
 
       {/* 页脚 */}
-      <footer className="bg-white border-t mt-16">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-gray-500 text-sm">
-            <p>© 2025 EduInteract. 保留所有权利。</p>
-            <p className="mt-1">技术栈：Next.js · Tailwind CSS · Cloudflare R2 · Supabase</p>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
