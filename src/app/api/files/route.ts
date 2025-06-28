@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({
@@ -10,7 +11,7 @@ const s3Client = new S3Client({
   },
 });
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     if (!process.env.R2_BUCKET_NAME) {
       return NextResponse.json(
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '9');
     const startIndex = (page - 1) * limit;
