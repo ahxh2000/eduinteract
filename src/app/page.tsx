@@ -44,8 +44,11 @@ function SubjectFilter({ selected, onSelect }: { selected: string; onSelect: (ke
 }
 
 function ToolCard({ tool }: { tool: Tool }) {
-  // 从本地配置获取样式信息
-  const subjectInfo = subjectConfig[tool.subject as keyof typeof subjectConfig];
+  // 从本地配置获取样式信息，如果找不到则使用默认配置
+  const subjectInfo = subjectConfig[tool.subject as keyof typeof subjectConfig] || {
+    label: tool.subject || "其他",
+    color: "bg-gray-500/90"
+  };
   
   return (
     <div className="tool-card group bg-white rounded-xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-2 p-6">
