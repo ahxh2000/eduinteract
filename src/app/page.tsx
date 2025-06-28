@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { FaArrowRight, FaSearch, FaSlidersH, FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaArrowRight, FaSearch, FaSlidersH, FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUpload } from "react-icons/fa";
+import Link from "next/link";
+import { Tool } from "@/types/database";
 
 // 学科配置
 const subjectConfig = {
@@ -53,20 +55,28 @@ const tools = [
   { title: "历史时间轴", subject: "history", desc: "交互式历史时间轴，探索各文明发展历程，关联重要历史事件与人物。" },
 ];
 
-function ToolCard({ tool }: { tool: typeof tools[0] }) {
+function ToolCard({ tool }: { tool: Tool }) {
+  // 从本地配置获取样式信息
   const subjectInfo = subjectConfig[tool.subject as keyof typeof subjectConfig];
   
   return (
-    <div className="tool-card group bg-white rounded-xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-2 p-6" data-subject={tool.subject} data-title={tool.title}>
+    <div className="tool-card group bg-white rounded-xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-2 p-6">
       <div className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-bold text-neutral-700 group-hover:text-primary transition-colors">{tool.title}</h3>
-        <span className={`px-2 py-1 ${subjectInfo.color} text-white text-xs font-medium rounded`}>{subjectInfo.label}</span>
+        <h3 className="text-xl font-bold text-neutral-700 group-hover:text-primary transition-colors">
+          {tool.title}
+        </h3>
+        <span className={`px-2 py-1 ${subjectInfo.color} text-white text-xs font-medium rounded`}>
+          {subjectInfo.label}
+        </span>
       </div>
-      <p className="text-neutral-500 text-sm mb-6">{tool.desc}</p>
+      <p className="text-neutral-500 text-sm mb-6">{tool.description}</p>
       <div className="flex justify-end">
-        <a href="#" className="view-tool px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-lg hover:bg-primary/20 transition-colors flex items-center">
-          查看工具 <span className="fa fa-arrow-right ml-2 text-xs" />
-        </a>
+        <Link 
+          href={`/tool/${tool.id}`} 
+          className="view-tool px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-lg hover:bg-primary/20 transition-colors flex items-center"
+        >
+          查看工具 <FaArrowRight className="ml-2 text-xs" />
+        </Link>
       </div>
     </div>
   );
@@ -103,7 +113,36 @@ function SubscribeSection() {
 
 export default function Home() {
   const [selectedSubject, setSelectedSubject] = React.useState("all");
+  const [tools, setTools] = React.useState<Tool[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
   const filteredTools = selectedSubject === "all" ? tools : tools.filter(t => t.subject === selectedSubject);
+
+  // 加载工具数据
+  const loadTools = async (subject?: string) => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (subject && subject !== 'all') params.append('subject', subject);
+
+      const response = await fetch(`/api/tools?${params.toString()}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setTools(data.tools);
+      }
+    } catch (error) {
+      console.error('加载工具失败:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 在useEffect中调用
+  React.useEffect(() => {
+    loadTools(selectedSubject);
+  }, [selectedSubject]);
+
   return (
     <div className="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
       {/* 导航栏 */}
@@ -111,17 +150,20 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* 网站Logo */}
-            <a href="#" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
                 <span className="text-xl">🎓</span>
               </div>
               <span className="text-xl font-bold text-neutral-700">EduInteract</span>
-            </a>
+            </Link>
             {/* 桌面端导航 */}
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="#" className="text-primary font-medium border-b-2 border-primary pb-1">首页</a>
+              <Link href="/" className="text-primary font-medium border-b-2 border-primary pb-1">首页</Link>
+              <Link href="/fileupload" className="text-neutral-600 hover:text-primary transition-colors duration-200 flex items-center">
+                <FaUpload className="mr-1" />
+                上传工具
+              </Link>
               <a href="#" className="text-neutral-600 hover:text-primary transition-colors duration-200">关于我们</a>
-              <a href="#" className="text-neutral-600 hover:text-primary transition-colors duration-200">资源中心</a>
               <a href="#" className="text-neutral-600 hover:text-primary transition-colors duration-200">联系我们</a>
             </nav>
             {/* 搜索和移动端菜单按钮 */}
@@ -156,12 +198,13 @@ export default function Home() {
                 >
                   浏览教学工具
                 </a>
-                <a
-                  href="#"
+                <Link
+                  href="/fileupload"
                   className="px-8 py-3 bg-white text-primary border border-primary rounded-lg font-semibold hover:bg-primary-50 hover:text-primary-700 hover:border-primary-600 transition-all duration-300 text-center flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
                 >
-                  了解更多 <FaArrowRight className="ml-2 text-primary text-base" />
-                </a>
+                  <FaUpload className="mr-2 text-primary text-base" />
+                  上传工具
+                </Link>
               </div>
             </div>
           </div>
@@ -242,9 +285,9 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-bold mb-6">快速链接</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">首页</a></li>
+                <li><Link href="/" className="text-neutral-400 hover:text-primary transition-colors duration-200">首页</Link></li>
+                <li><Link href="/fileupload" className="text-neutral-400 hover:text-primary transition-colors duration-200">上传工具</Link></li>
                 <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">所有工具</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">学科分类</a></li>
                 <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">教学案例</a></li>
                 <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">关于我们</a></li>
               </ul>

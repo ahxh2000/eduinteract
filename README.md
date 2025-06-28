@@ -1,102 +1,112 @@
-# HTML File Viewer
+# EduInteract - 互动教学工具平台
 
-一个允许用户上传HTML文件并在网页中预览的应用程序。
+一个为教育工作者和学生提供高质量互动教学工具的在线平台。
 
-## 功能描述
+## 功能特性
 
-1. 文件上传
-   - 支持拖拽上传和点击选择文件
-   - 仅支持HTML文件（.html）
-   - 文件大小限制：100KB
-   - 实时显示上传进度
+### 🎯 核心功能
+- **工具上传**: 支持上传HTML格式的互动教学工具
+- **学科分类**: 按数学、物理、化学、生物、地理、历史等学科分类
+- **工具展示**: 美观的工具卡片展示，支持学科筛选
+- **工具预览**: 查看工具详情和预览功能
 
-2. 文件存储
-   - 使用Cloudflare R2进行文件存储
-   - 所有文件公开可访问
-   - 自动生成文件访问URL
+### 📁 文件管理
+- **Cloudflare R2存储**: HTML文件存储在Cloudflare R2
+- **文件验证**: 支持HTML文件，大小限制100KB
+- **拖拽上传**: 支持拖拽文件上传
 
-3. 文件预览
-   - 使用iframe展示HTML文件内容
-   - 实时预览上传的文件
-   - 处理加载状态和错误情况
+### 🎨 用户界面
+- **响应式设计**: 适配桌面和移动设备
+- **现代化UI**: 使用Tailwind CSS构建
+- **流畅交互**: 平滑的动画和过渡效果
 
 ## 技术栈
 
-- 前端框架：Next.js
-- 文件存储：Cloudflare R2
-- 样式：Tailwind CSS
-- 文件处理：使用浏览器原生File API
-
-## 实现步骤
-
-### 1. 项目初始化
-- 创建Next.js项目
-- 安装必要依赖
-- 配置项目结构
-
-### 2. 文件上传组件开发
-- 创建拖拽上传区域
-- 实现文件选择功能
-- 添加文件类型验证
-- 添加文件大小验证
-- 显示上传进度
-
-### 3. Cloudflare R2配置
-- 创建R2存储桶
-- 配置访问权限
-- 设置环境变量
-- 实现R2客户端配置
-
-### 4. 后端API开发
-- 创建文件上传API
-- 实现文件验证逻辑
-- 实现R2文件上传
-- 返回文件访问URL
-
-### 5. 文件预览组件开发
-- 创建iframe预览组件
-- 实现加载状态显示
-- 添加错误处理
-- 配置iframe安全属性
-
-### 6. 安全措施
-- 文件类型验证（前端和后端）
-- 文件大小限制
-- iframe sandbox配置
-- 错误处理和用户提示
-
-### 7. 测试和优化
-- 测试文件上传功能
-- 测试文件预览功能
-- 优化用户体验
-- 性能优化
+- **前端**: Next.js 14, React 18, TypeScript
+- **样式**: Tailwind CSS
+- **存储**: Cloudflare R2
+- **数据库**: Supabase (待集成)
+- **图标**: React Icons
 
 ## 项目结构
+
 ```
-├── components/
-│   ├── FileUpload.tsx    # 文件上传组件
-│   └── FilePreview.tsx   # 文件预览组件
-├── pages/
+src/
+├── app/
 │   ├── api/
-│   │   └── upload.ts     # 文件上传API
-│   └── index.tsx         # 主页面
-├── lib/
-│   └── r2.ts            # R2客户端配置
-├── styles/
-│   └── globals.css      # 全局样式
-└── public/              # 静态资源
+│   │   └── upload/
+│   │       └── route.ts          # 文件上传API
+│   │   └── fileupload/
+│   │       └── page.tsx              # 工具上传页面
+│   │   └── tool/
+│   │       └── [id]/
+│   │           └── page.tsx          # 工具详情页面
+│   │   └── globals.css
+│   │   └── layout.tsx
+│   │   └── page.tsx                  # 首页
+│   ├── components/
+│   │   ├── FileUpload.tsx            # 原始文件上传组件
+│   │   └── ToolUpload.tsx            # 工具上传组件
+│   │   └── FilePreview.tsx   # 文件预览组件
+│   └── lib/
+│       ├── r2.ts                     # Cloudflare R2配置
+│       └── subjectConfig.ts          # 学科配置
 ```
 
-## 环境变量
-```
-R2_ACCESS_KEY_ID=your_access_key_id
-R2_SECRET_ACCESS_KEY=your_secret_access_key
-R2_BUCKET_NAME=your_bucket_name
-R2_ACCOUNT_ID=your_account_id
-```
+## 安装和运行
 
-## 注意事项
-1. 确保R2存储桶配置为公开访问
-2. 文件大小限制为100KB
-3. 仅支持HTML文件上传
-4. 需要正确配置CORS策略 
+1. **安装依赖**
+   ```bash
+   npm install
+   ```
+
+2. **环境变量配置**
+   创建 `.env.local` 文件：
+   ```env
+   # Cloudflare R2配置
+   R2_BUCKET_NAME=your_r2_bucket_name
+   R2_ACCESS_KEY_ID=your_r2_access_key_id
+   R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
+   
+   # Supabase配置 (待集成)
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+3. **启动开发服务器**
+   ```bash
+   npm run dev
+   ```
+
+4. **访问应用**
+   打开 [http://localhost:3000](http://localhost:3000)
+
+## 使用说明
+
+### 上传工具
+1. 访问 `/fileupload` 页面
+2. 填写工具标题、选择学科、输入描述
+3. 上传HTML文件（支持拖拽）
+4. 点击"上传工具"按钮
+
+### 浏览工具
+1. 在首页查看所有工具
+2. 使用学科筛选功能
+3. 点击工具卡片查看详情
+
+## 待完成功能
+
+- [ ] Supabase数据库集成
+- [ ] 工具搜索功能
+- [ ] 用户认证系统
+- [ ] 工具评分和评论
+- [ ] 工具收藏功能
+- [ ] 管理员后台
+
+## 贡献
+
+欢迎提交Issue和Pull Request来改进这个项目。
+
+## 许可证
+
+MIT License 
