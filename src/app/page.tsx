@@ -3,15 +3,24 @@
 import React from "react";
 import { FaArrowRight, FaSearch, FaSlidersH, FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 
+// 学科配置
+const subjectConfig = {
+  math: { label: "数学", color: "bg-primary/90" },
+  physics: { label: "物理", color: "bg-secondary/90" },
+  chemistry: { label: "化学", color: "bg-tertiary/90" },
+  biology: { label: "生物", color: "bg-purple-500/90" },
+  geography: { label: "地理", color: "bg-cyan-500/90" },
+  history: { label: "历史", color: "bg-amber-500/90" },
+};
+
 // 学科筛选组件
 const subjects = [
   { key: "all", label: "全部学科", color: "bg-primary text-white" },
-  { key: "math", label: "数学", color: "bg-neutral-100 text-neutral-600" },
-  { key: "physics", label: "物理", color: "bg-neutral-100 text-neutral-600" },
-  { key: "chemistry", label: "化学", color: "bg-neutral-100 text-neutral-600" },
-  { key: "biology", label: "生物", color: "bg-neutral-100 text-neutral-600" },
-  { key: "geography", label: "地理", color: "bg-neutral-100 text-neutral-600" },
-  { key: "history", label: "历史", color: "bg-neutral-100 text-neutral-600" },
+  ...Object.entries(subjectConfig).map(([key, config]) => ({
+    key,
+    label: config.label,
+    color: "bg-neutral-100 text-neutral-600"
+  }))
 ];
 
 function SubjectFilter({ selected, onSelect }: { selected: string; onSelect: (key: string) => void }) {
@@ -32,30 +41,29 @@ function SubjectFilter({ selected, onSelect }: { selected: string; onSelect: (ke
 
 // 工具卡片静态数据
 const tools = [
-  { title: "函数图像绘制器", subject: "math", subjectLabel: "数学", subjectColor: "bg-primary/90", views: "2.4k", desc: "直观绘制各种函数图像，支持参数调整，帮助学生理解函数性质与图像变化规律。" },
-  { title: "几何图形构造器", subject: "math", subjectLabel: "数学", subjectColor: "bg-primary/90", views: "1.8k", desc: "交互式构造几何图形，测量角度与距离，探索几何定理，培养空间想象能力。" },
-  { title: "电路模拟器", subject: "physics", subjectLabel: "物理", subjectColor: "bg-secondary/90", views: "3.1k", desc: "虚拟搭建电路，模拟电流电压变化，直观理解欧姆定律和电路原理。" },
-  { title: "力学模拟器", subject: "physics", subjectLabel: "物理", subjectColor: "bg-secondary/90", views: "2.7k", desc: "模拟物体受力运动，分析速度、加速度与力的关系，理解牛顿运动定律。" },
-  { title: "元素周期表互动工具", subject: "chemistry", subjectLabel: "化学", subjectColor: "bg-tertiary/90", views: "2.2k", desc: "交互式元素周期表，查看元素特性、电子排布、化学性质及相关化合物信息。" },
-  { title: "化学反应模拟器", subject: "chemistry", subjectLabel: "化学", subjectColor: "bg-tertiary/90", views: "2.9k", desc: "虚拟模拟化学反应过程，观察物质变化与能量转换，安全演示危险化学反应。" },
-  { title: "细胞结构探索工具", subject: "biology", subjectLabel: "生物", subjectColor: "bg-purple-500/90", views: "1.9k", desc: "3D交互式细胞结构模型，探索动植物细胞组成，了解细胞器功能与细胞生命活动。" },
-  { title: "遗传规律模拟器", subject: "biology", subjectLabel: "生物", subjectColor: "bg-purple-500/90", views: "1.7k", desc: "模拟孟德尔遗传实验，可视化基因分离与自由组合规律，理解遗传概率计算。" },
-  { title: "3D地球模型", subject: "geography", subjectLabel: "地理", subjectColor: "bg-cyan-500/90", views: "1.5k", desc: "交互式3D地球模型，查看地形地貌、气候分布、板块构造，探索地球奥秘。" },
-  { title: "历史时间轴", subject: "history", subjectLabel: "历史", subjectColor: "bg-amber-500/90", views: "1.3k", desc: "交互式历史时间轴，探索各文明发展历程，关联重要历史事件与人物。" },
+  { title: "函数图像绘制器", subject: "math", desc: "直观绘制各种函数图像，支持参数调整，帮助学生理解函数性质与图像变化规律。" },
+  { title: "几何图形构造器", subject: "math", desc: "交互式构造几何图形，测量角度与距离，探索几何定理，培养空间想象能力。" },
+  { title: "电路模拟器", subject: "physics", desc: "虚拟搭建电路，模拟电流电压变化，直观理解欧姆定律和电路原理。" },
+  { title: "力学模拟器", subject: "physics", desc: "模拟物体受力运动，分析速度、加速度与力的关系，理解牛顿运动定律。" },
+  { title: "元素周期表互动工具", subject: "chemistry", desc: "交互式元素周期表，查看元素特性、电子排布、化学性质及相关化合物信息。" },
+  { title: "化学反应模拟器", subject: "chemistry", desc: "虚拟模拟化学反应过程，观察物质变化与能量转换，安全演示危险化学反应。" },
+  { title: "细胞结构探索工具", subject: "biology", desc: "3D交互式细胞结构模型，探索动植物细胞组成，了解细胞器功能与细胞生命活动。" },
+  { title: "遗传规律模拟器", subject: "biology", desc: "模拟孟德尔遗传实验，可视化基因分离与自由组合规律，理解遗传概率计算。" },
+  { title: "3D地球模型", subject: "geography", desc: "交互式3D地球模型，查看地形地貌、气候分布、板块构造，探索地球奥秘。" },
+  { title: "历史时间轴", subject: "history", desc: "交互式历史时间轴，探索各文明发展历程，关联重要历史事件与人物。" },
 ];
 
 function ToolCard({ tool }: { tool: typeof tools[0] }) {
+  const subjectInfo = subjectConfig[tool.subject as keyof typeof subjectConfig];
+  
   return (
     <div className="tool-card group bg-white rounded-xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-2 p-6" data-subject={tool.subject} data-title={tool.title}>
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xl font-bold text-neutral-700 group-hover:text-primary transition-colors">{tool.title}</h3>
-        <span className={`px-2 py-1 ${tool.subjectColor} text-white text-xs font-medium rounded`}>{tool.subjectLabel}</span>
+        <span className={`px-2 py-1 ${subjectInfo.color} text-white text-xs font-medium rounded`}>{subjectInfo.label}</span>
       </div>
       <p className="text-neutral-500 text-sm mb-6">{tool.desc}</p>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center text-sm text-neutral-400">
-          <span className="fa fa-eye mr-1" /> {tool.views}
-        </div>
+      <div className="flex justify-end">
         <a href="#" className="view-tool px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-lg hover:bg-primary/20 transition-colors flex items-center">
           查看工具 <span className="fa fa-arrow-right ml-2 text-xs" />
         </a>
@@ -245,12 +253,13 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-bold mb-6">学科分类</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">数学</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">物理</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">化学</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">生物</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">地理</a></li>
-                <li><a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">历史</a></li>
+                {Object.entries(subjectConfig).map(([key, config]) => (
+                  <li key={key}>
+                    <a href="#" className="text-neutral-400 hover:text-primary transition-colors duration-200">
+                      {config.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
             {/* 联系我们区块 */}
