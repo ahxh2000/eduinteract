@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { FaSearch, FaUpload } from "react-icons/fa";
 import Link from "next/link";

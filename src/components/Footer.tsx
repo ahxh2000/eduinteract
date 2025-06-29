@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
