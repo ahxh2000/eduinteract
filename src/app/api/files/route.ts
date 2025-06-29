@@ -11,6 +11,8 @@ const s3Client = new S3Client({
   },
 });
 
+const FILE_BASE_URL = process.env.FILE_BASE_URL!;
+
 export async function GET(request: NextRequest) {
   try {
     if (!process.env.R2_BUCKET_NAME) {
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
       key: file.Key,
       lastModified: file.LastModified,
       size: file.Size,
-      url: `https://h5.sunodownload.net/${file.Key}`,
+      url: `${FILE_BASE_URL}${file.Key}`,
     })) || [];
 
     const paginatedFiles = allFiles.slice(startIndex, startIndex + limit);

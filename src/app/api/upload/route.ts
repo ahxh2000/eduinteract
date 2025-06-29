@@ -4,6 +4,8 @@ import r2Client from '@/lib/r2';
 import { subjectConfig } from '@/lib/subjectConfig';
 import { toolService } from '@/lib/database';
 
+const FILE_BASE_URL = process.env.FILE_BASE_URL!;
+
 export async function POST(request: NextRequest) {
   try {
     console.log('开始处理上传请求');
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
     );
     console.log('文件已成功上传到 R2');
 
-    const fileUrl = `https://h5.sunodownload.net/${key}`;
+    const fileUrl = `${FILE_BASE_URL}${key}`;
     
     // 获取学科信息
     const subjectInfo = subjectConfig[subject as keyof typeof subjectConfig];
