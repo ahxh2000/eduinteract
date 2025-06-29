@@ -40,7 +40,7 @@ export default function AdminToolUploadPage() {
                   </div>
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-blue-800">
-                      工具 "{uploadedToolTitle}" 上传成功！
+                      工具 &quot;{uploadedToolTitle}&quot; 上传成功！
                     </h3>
                     <div className="mt-2 text-sm text-blue-700">
                       <p>您的工具已保存到数据库中，2秒后自动跳转到工具管理页面。</p>
