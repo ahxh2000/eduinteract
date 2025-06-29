@@ -1,5 +1,5 @@
 export interface Tool {
-  id: number
+  id: string
   title: string
   subject: string  // 只保存学科key
   description: string

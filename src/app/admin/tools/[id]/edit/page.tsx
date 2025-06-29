@@ -6,6 +6,16 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Tool } from '@/types/database'
 
+// 学科配置 - 与主页面保持一致
+const subjectConfig = {
+  math: { label: "数学", color: "bg-primary/90" },
+  physics: { label: "物理", color: "bg-secondary/90" },
+  chemistry: { label: "化学", color: "bg-tertiary/90" },
+  biology: { label: "生物", color: "bg-purple-500/90" },
+  geography: { label: "地理", color: "bg-cyan-500/90" },
+  history: { label: "历史", color: "bg-amber-500/90" },
+};
+
 export default function EditTool() {
   const params = useParams()
   const router = useRouter()
@@ -177,15 +187,11 @@ export default function EditTool() {
                   }`}
                 >
                   <option value="">请选择学科</option>
-                  <option value="math">数学</option>
-                  <option value="physics">物理</option>
-                  <option value="chemistry">化学</option>
-                  <option value="biology">生物</option>
-                  <option value="geography">地理</option>
-                  <option value="history">历史</option>
-                  <option value="chinese">语文</option>
-                  <option value="english">英语</option>
-                  <option value="other">其他</option>
+                  {Object.entries(subjectConfig).map(([key, config]) => (
+                    <option key={key} value={key}>
+                      {config.label}
+                    </option>
+                  ))}
                 </select>
                 {errors.subject && (
                   <p className="mt-1 text-sm text-red-600">{errors.subject}</p>

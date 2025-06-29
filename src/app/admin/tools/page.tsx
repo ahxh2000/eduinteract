@@ -15,6 +15,8 @@ export default function AdminTools() {
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState<string|null>(null)
+  const [deleting, setDeleting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -56,6 +58,23 @@ export default function AdminTools() {
     router.push(`/admin/tools/${toolId}`)
   }
 
+  const handleDelete = async (id: string) => {
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/tools/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        fetchTools()
+      } else {
+        alert('删除失败')
+      }
+    } catch {
+      alert('删除失败')
+    } finally {
+      setDeleting(false)
+      setDeleteId(null)
+    }
+  }
+
   return (
     <AdminAuth>
       <AdminLayout>
@@ -63,6 +82,12 @@ export default function AdminTools() {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">工具管理</h1>
             <div className="flex space-x-2">
+              <button
+                onClick={() => router.push('/admin/tools/upload')}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              >
+                上传工具
+              </button>
               <select value={subject} onChange={e=>setSubject(e.target.value)} className="border rounded px-2 py-1">
                 <option value="">全部学科</option>
                 <option value="math">数学</option>
@@ -105,9 +130,15 @@ export default function AdminTools() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button 
                         onClick={() => handleDetailClick(tool.id.toString())}
-                        className="text-indigo-600 hover:underline text-sm"
+                        className="text-indigo-600 hover:underline text-sm mr-4"
                       >
                         详情
+                      </button>
+                      <button
+                        onClick={() => setDeleteId(tool.id)}
+                        className="text-red-600 hover:underline text-sm"
+                      >
+                        删除
                       </button>
                     </td>
                   </tr>
@@ -124,6 +155,31 @@ export default function AdminTools() {
             <span className="px-2 py-1">{page} / {totalPages || 1}</span>
             <button disabled={page===totalPages||totalPages===0} onClick={()=>setPage(page+1)} className="px-3 py-1 border rounded disabled:opacity-50">下一页</button>
           </div>
+          {/* 删除确认对话框 */}
+          {deleteId && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+              <div className="bg-white rounded shadow-lg p-6 w-80">
+                <div className="text-lg font-semibold mb-4">确认删除</div>
+                <div className="mb-6 text-gray-700">确定要删除该工具吗？此操作不可恢复，且会删除文件。</div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setDeleteId(null)}
+                    className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+                    disabled={deleting}
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={() => handleDelete(deleteId)}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                    disabled={deleting}
+                  >
+                    {deleting ? '删除中...' : '确认删除'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </AdminLayout>
     </AdminAuth>

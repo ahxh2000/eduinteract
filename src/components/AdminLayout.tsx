@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: '仪表板', href: '/admin/dashboard', icon: '📊' },
     { name: '工具管理', href: '/admin/tools', icon: '🛠️' },
     { name: '文件管理', href: '/admin/files', icon: '📁' },
+    { name: '上传工具', href: '/admin/tools/upload', icon: '⬆️' },
   ]
 
   return (

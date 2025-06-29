@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { Tool } from '@/types/database'
+import { deleteR2File } from './r2'
 
 export const toolService = {
   // 保存工具记录
@@ -86,13 +87,29 @@ export const toolService = {
     return data
   },
 
-  // 软删除工具（设置 is_active=false）
+  // 彻底删除工具（删除R2文件和数据库记录）
   async deleteTool(id: string): Promise<boolean> {
+    // 获取工具信息
+    const tool = await this.getToolByIdAll(id);
+    if (!tool) return false;
+    // 解析bucket和key
+    // 假设file_url为 https://<bucket>.r2.cloudflarestorage.com/<key>
+    try {
+      const url = new URL(tool.file_url);
+      const hostParts = url.host.split('.');
+      const bucket = hostParts[0];
+      const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+      await deleteR2File(bucket, key);
+    } catch (e) {
+      // 文件删除失败不影响主流程
+      console.error('删除R2文件失败', e);
+    }
+    // 删除数据库记录
     const { error } = await supabase
       .from('tools')
-      .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq('id', id)
-    if (error) throw error
-    return true
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    return true;
   },
 } 

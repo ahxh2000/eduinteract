@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 const r2Client = new S3Client({
   region: 'auto',
@@ -9,4 +9,12 @@ const r2Client = new S3Client({
   },
 });
 
-export default r2Client; 
+export default r2Client;
+
+export async function deleteR2File(bucket: string, key: string) {
+  const command = new DeleteObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  });
+  await r2Client.send(command);
+} 
