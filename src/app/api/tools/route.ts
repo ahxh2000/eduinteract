@@ -43,20 +43,26 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const subject = searchParams.get('subject');
+    const requestSource = request.headers.get('x-request-source');
+    
+    // 判断是否为管理后台请求
+    const isAdminRequest = requestSource === 'admin';
     
     // 生成缓存键
     const cacheKey = subject || 'all';
     
-    // 检查缓存
-    if (isCacheValid(cacheKey)) {
-      console.log(`缓存命中: ${cacheKey}`);
-      return NextResponse.json({ 
-        tools: cache[cacheKey].data,
-        fromCache: true 
-      });
+    // 只有非管理后台请求才检查缓存
+    if (!isAdminRequest) {
+      if (isCacheValid(cacheKey)) {
+        console.log(`缓存命中: ${cacheKey}`);
+        return NextResponse.json({ 
+          tools: cache[cacheKey].data,
+          fromCache: true 
+        });
+      }
     }
     
-    // 缓存未命中，从数据库获取数据
+    // 管理后台请求或缓存未命中，从数据库获取数据
     console.log(`缓存未命中，从数据库获取: ${cacheKey}`);
     let tools;
     if (subject && subject !== 'all') {
@@ -65,11 +71,13 @@ export async function GET(request: NextRequest) {
       tools = await toolService.getAllTools();
     }
     
-    // 更新缓存
-    cache[cacheKey] = {
-      data: tools,
-      timestamp: Date.now()
-    };
+    // 只对非管理后台请求进行缓存
+    if (!isAdminRequest) {
+      cache[cacheKey] = {
+        data: tools,
+        timestamp: Date.now()
+      };
+    }
     
     return NextResponse.json({ 
       tools,

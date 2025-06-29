@@ -34,7 +34,11 @@ export default function AdminTools() {
   const fetchTools = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/tools?t=${Date.now()}`)
+      const res = await fetch('/api/tools', {
+        headers: {
+          'X-Request-Source': 'admin'
+        }
+      })
       const data = await res.json()
       setTools(data.tools)
     } catch (e) {

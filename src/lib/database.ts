@@ -92,18 +92,24 @@ export const toolService = {
     // 获取工具信息
     const tool = await this.getToolByIdAll(id);
     if (!tool) return false;
-    // 解析bucket和key
-    // 假设file_url为 https://<bucket>.r2.cloudflarestorage.com/<key>
-    try {
-      const url = new URL(tool.file_url);
-      const hostParts = url.host.split('.');
-      const bucket = hostParts[0];
-      const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
-      await deleteR2File(bucket, key);
-    } catch (e) {
-      // 文件删除失败不影响主流程
-      console.error('删除R2文件失败', e);
+    
+    // 删除R2文件
+    if (tool.file_url) {
+      try {
+        // 从URL中提取key，bucket使用环境变量
+        const url = new URL(tool.file_url);
+        const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+        const bucket = process.env.R2_BUCKET_NAME;
+        
+        console.log('删除R2文件:', { bucket, key, fileUrl: tool.file_url });
+        await deleteR2File(bucket!, key);
+        console.log('R2文件删除成功');
+      } catch (e) {
+        // 文件删除失败不影响主流程
+        console.error('删除R2文件失败', e);
+      }
     }
+    
     // 删除数据库记录
     const { error } = await supabase
       .from('tools')
