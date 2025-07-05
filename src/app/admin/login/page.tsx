@@ -16,7 +16,7 @@ export default function AdminLogin() {
     setError('')
 
     // 硬编码的凭据验证
-    if (username === 'adm123@@' && password === 'adm123@@') {
+    if (username === 'dmi123@@' && password === 'dim123@@') {
       // 设置登录状态到 localStorage
       localStorage.setItem('adminLoggedIn', 'true')
       localStorage.setItem('adminUsername', username)
