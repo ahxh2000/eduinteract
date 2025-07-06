@@ -15,14 +15,28 @@ export default function AdminLogin() {
     setLoading(true)
     setError('')
 
-    // 硬编码的凭据验证
-    if (username === 'dmi123@@' && password === 'dim123@@') {
-      // 设置登录状态到 localStorage
-      localStorage.setItem('adminLoggedIn', 'true')
-      localStorage.setItem('adminUsername', username)
-      router.push('/admin/dashboard')
-    } else {
-      setError('用户名或密码错误')
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // 存储JWT令牌和用户信息
+        localStorage.setItem('adminToken', data.token)
+        localStorage.setItem('adminUsername', data.username)
+        localStorage.setItem('adminLoggedIn', 'true')
+        router.push('/admin/dashboard')
+      } else {
+        setError(data.error || '用户名或密码错误')
+      }
+    } catch (error) {
+      setError('登录失败，请重试')
     }
     
     setLoading(false)

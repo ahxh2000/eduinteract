@@ -46,6 +46,17 @@ export const toolService = {
     return data || []
   },
 
+  // 管理后台：获取所有工具（包括停用的）
+  async getAllToolsForAdmin(): Promise<Tool[]> {
+    const { data, error } = await supabase
+      .from('tools')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data || []
+  },
+
   // 按学科筛选工具
   async getToolsBySubject(subject: string): Promise<Tool[]> {
     const { data, error } = await supabase
@@ -54,6 +65,18 @@ export const toolService = {
       .eq('subject', subject)
       .eq('is_active', true)
       .order('views', { ascending: false })
+    
+    if (error) throw error
+    return data || []
+  },
+
+  // 管理后台：按学科筛选工具（包括停用的）
+  async getToolsBySubjectForAdmin(subject: string): Promise<Tool[]> {
+    const { data, error } = await supabase
+      .from('tools')
+      .select('*')
+      .eq('subject', subject)
+      .order('created_at', { ascending: false })
     
     if (error) throw error
     return data || []

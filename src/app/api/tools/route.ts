@@ -66,9 +66,13 @@ export async function GET(request: NextRequest) {
     console.log(`缓存未命中，从数据库获取: ${cacheKey}`);
     let tools;
     if (subject && subject !== 'all') {
-      tools = await toolService.getToolsBySubject(subject);
+      tools = isAdminRequest 
+        ? await toolService.getToolsBySubjectForAdmin(subject)
+        : await toolService.getToolsBySubject(subject);
     } else {
-      tools = await toolService.getAllTools();
+      tools = isAdminRequest 
+        ? await toolService.getAllToolsForAdmin()
+        : await toolService.getAllTools();
     }
     
     // 只对非管理后台请求进行缓存

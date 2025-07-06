@@ -21,8 +21,15 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/tools')
-      const tools: Tool[] = await response.json()
+      const response = await fetch('/api/tools', {
+        headers: {
+          'x-request-source': 'admin'
+        }
+      })
+      const data = await response.json()
+      
+      // 确保从响应中提取 tools 数组
+      const tools: Tool[] = data.tools || []
       
       const totalTools = tools.length
       const activeTools = tools.filter(tool => tool.is_active).length

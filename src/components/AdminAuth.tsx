@@ -13,21 +13,40 @@ export default function AdminAuth({ children }: AdminAuthProps) {
   const router = useRouter()
 
   useEffect(() => {
-    // 检查登录状态
-    const adminLoggedIn = localStorage.getItem('adminLoggedIn')
-    const adminUsername = localStorage.getItem('adminUsername')
-
-    if (adminLoggedIn === 'true' && adminUsername === 'adm123@@') {
-      setIsAuthenticated(true)
-    } else {
-      // 清除可能存在的无效登录状态
-      localStorage.removeItem('adminLoggedIn')
-      localStorage.removeItem('adminUsername')
-      router.push('/admin/login')
-    }
-    
-    setLoading(false)
+    verifyToken()
   }, [router])
+
+  const verifyToken = async () => {
+    const token = localStorage.getItem('adminToken')
+    
+    if (!token) {
+      handleLogout()
+      return
+    }
+
+    try {
+      const response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+
+      if (data.valid) {
+        setIsAuthenticated(true)
+      } else {
+        handleLogout()
+      }
+    } catch (error) {
+      console.error('令牌验证失败:', error)
+      handleLogout()
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('adminLoggedIn')
