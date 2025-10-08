@@ -7,6 +7,9 @@ import { useParams, useRouter } from 'next/navigation'
 import { Tool } from '@/types/database'
 import { subjectConfig } from '@/lib/subjectConfig'
 
+// 添加 edge runtime 导出
+export const runtime = 'edge'
+
 export default function EditTool() {
   const params = useParams()
   const router = useRouter()

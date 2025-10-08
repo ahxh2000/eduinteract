@@ -4,6 +4,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
+// 添加 edge runtime 导出
+export const runtime = 'edge';
+
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const tool = await toolService.getToolById(id);
