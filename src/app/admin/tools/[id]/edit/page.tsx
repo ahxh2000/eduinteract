@@ -5,16 +5,7 @@ import AdminLayout from '@/components/AdminLayout'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Tool } from '@/types/database'
-
-// 学科配置 - 与主页面保持一致
-const subjectConfig = {
-  math: { label: "数学", color: "bg-primary/90" },
-  physics: { label: "物理", color: "bg-secondary/90" },
-  chemistry: { label: "化学", color: "bg-tertiary/90" },
-  biology: { label: "生物", color: "bg-purple-500/90" },
-  geography: { label: "地理", color: "bg-cyan-500/90" },
-  history: { label: "历史", color: "bg-amber-500/90" },
-};
+import { subjectConfig } from '@/lib/subjectConfig'
 
 export default function EditTool() {
   const params = useParams()

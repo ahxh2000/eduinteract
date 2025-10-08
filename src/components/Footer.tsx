@@ -1,16 +1,7 @@
 import React from "react";
 import { FaWeixin, FaWeibo, FaQq, FaYoutube, FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
-
-// 学科配置
-const subjectConfig = {
-  math: { label: "数学", color: "bg-primary/90" },
-  physics: { label: "物理", color: "bg-secondary/90" },
-  chemistry: { label: "化学", color: "bg-tertiary/90" },
-  biology: { label: "生物", color: "bg-purple-500/90" },
-  geography: { label: "地理", color: "bg-cyan-500/90" },
-  history: { label: "历史", color: "bg-amber-500/90" },
-};
+import { subjectConfig } from "@/lib/subjectConfig";
 
 export default function Footer() {
   return (
@@ -73,17 +64,17 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-6">联系我们</h3>
             <ul className="space-y-3">
-              <li className="flex items-start space-x-3">
+              {/* <li className="flex items-start space-x-3">
                 <FaMapMarkerAlt className="mt-1 text-neutral-400" />
                 <span className="text-neutral-400">北京市海淀区中关村大街1号</span>
               </li>
               <li className="flex items-center space-x-3">
                 <FaPhone className="text-neutral-400" />
                 <span className="text-neutral-400">+86 10 8888 7777</span>
-              </li>
+              </li> */}
               <li className="flex items-center space-x-3">
                 <FaEnvelope className="text-neutral-400" />
-                <span className="text-neutral-400">contact@eduinteract.com</span>
+                <span className="text-neutral-400">hi@eduinteract.net</span>
               </li>
             </ul>
           </div>
