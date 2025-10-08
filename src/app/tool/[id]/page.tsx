@@ -2,9 +2,11 @@ import { toolService } from '@/lib/database';
 import { subjectConfig } from '@/lib/subjectConfig';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
 
-export default async function ToolPage({ params }: { params: { id: string } }) {
-  const tool = await toolService.getToolById(params.id);
+export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const tool = await toolService.getToolById(id);
 
   if (!tool) {
     return (
@@ -12,9 +14,9 @@ export default async function ToolPage({ params }: { params: { id: string } }) {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">工具不存在</h1>
           <p className="text-gray-600 mb-6">抱歉，您访问的工具不存在或已被删除。</p>
-          <a href="/" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors">
+          <Link href="/" className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors">
             返回首页
-          </a>
+          </Link>
         </div>
       </div>
     );

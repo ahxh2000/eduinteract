@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { FaUpload, FaSpinner, FaCheck, FaCode, FaFile } from 'react-icons/fa';
 import { subjectConfig } from '@/lib/subjectConfig';
+import Link from 'next/link';
 
 interface ToolUploadProps {
   onUploadSuccess?: (toolId: string, toolTitle: string) => void;
@@ -180,12 +181,12 @@ const ToolUpload: React.FC<ToolUploadProps> = ({ onUploadSuccess }) => {
             >
               继续上传
             </button>
-            <a
+            <Link
               href="/"
               className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
               返回首页
-            </a>
+            </Link>
           </div>
         </div>
       </div>

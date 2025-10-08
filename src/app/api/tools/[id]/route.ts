@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { toolService } from '@/lib/database'
 
+// 添加 edge runtime 导出
+export const runtime = 'edge'
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const tool = await toolService.getToolByIdAll(params.id)
+    const { id } = await params
+    const tool = await toolService.getToolByIdAll(id)
     if (!tool) {
       return NextResponse.json({ error: '工具不存在' }, { status: 404 })
     }
@@ -19,12 +23,13 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { title, description, subject, is_active } = body
-    const updatedTool = await toolService.updateTool(params.id, {
+    const updatedTool = await toolService.updateTool(id, {
       title,
       description,
       subject,
@@ -42,10 +47,11 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const success = await toolService.deleteTool(params.id)
+    const { id } = await params
+    const success = await toolService.deleteTool(id)
     if (!success) {
       return NextResponse.json({ error: '工具不存在' }, { status: 404 })
     }

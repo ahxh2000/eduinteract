@@ -1,0 +1,24 @@
+# Cloudflare Pages 配置文件
+name = "eduinteract"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 环境变量
+[vars]
+# 这里可以设置全局环境变量，但在 Cloudflare Pages 中建议通过控制台设置
+
+# KV 存储 (如果需要)
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "your-kv-namespace-id"
+
+# D1 数据库 (如果使用 D1)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "your-database-name"
+# database_id = "your-database-id"
+
+# R2 存储桶 (如果需要直接访问)
+# [[r2_buckets]]
+# binding = "R2_BUCKET"
+# bucket_name = "your-bucket-name"

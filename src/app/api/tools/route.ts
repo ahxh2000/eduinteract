@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { toolService } from '@/lib/database';
 
+// 添加 edge runtime 导出
+export const runtime = 'edge';
+
 // 缓存存储
 interface CacheEntry {
   data: any;

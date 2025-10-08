@@ -4,6 +4,9 @@ import r2Client from '@/lib/r2';
 import { subjectConfig } from '@/lib/subjectConfig';
 import { toolService } from '@/lib/database';
 
+// 添加 edge runtime 导出
+export const runtime = 'edge';
+
 const FILE_BASE_URL = process.env.FILE_BASE_URL!;
 
 export async function POST(request: NextRequest) {
