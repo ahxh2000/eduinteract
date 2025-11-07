@@ -3,6 +3,7 @@ import { subjectConfig } from '@/lib/subjectConfig';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import ViewCounter from '@/components/ViewCounter';//浏览量-lmn
 
 // 添加 edge runtime 导出
 export const runtime = 'edge';
@@ -10,6 +11,7 @@ export const runtime = 'edge';
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const tool = await toolService.getToolById(id);
+
 
   if (!tool) {
     return (
@@ -47,8 +49,11 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
             <div className="text-sm text-gray-500">
               工具ID: {tool.id}
             </div>
-          </div>
+            {/* 添加客户端浏览量计数器-lmn */}
+            <ViewCounter toolId={tool.id}  />
 
+          </div>
+                            
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="p-4 border-b bg-gray-50">
               <h2 className="text-lg font-semibold text-gray-800">工具预览</h2>
