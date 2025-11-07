@@ -141,4 +141,26 @@ export const toolService = {
     if (error) throw error;
     return true;
   },
+  
+   // 增加浏览量--lmn
+ async incrementViewsSimple(id: string): Promise<boolean> {
+    try {
+      const tool = await this.getToolByIdAll(id)
+      if (!tool) return false
+      
+      const { error } = await supabase
+        .from('tools')
+        .update({ 
+          views: tool.views + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        
+      return !error
+    } catch (error) {
+      console.error('增加浏览量失败:', error)
+      return false
+    }
+  },
+
 } 
