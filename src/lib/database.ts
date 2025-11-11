@@ -110,6 +110,30 @@ export const toolService = {
     return data
   },
 
+  // 增加浏览量
+  async incrementViews(id: string): Promise<void> {
+    // 先获取当前浏览量
+    const { data: currentTool, error: fetchError } = await supabase
+      .from('tools')
+      .select('views')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // 更新浏览量
+    const currentViews = currentTool?.views || 0;
+    const { error: updateError } = await supabase
+      .from('tools')
+      .update({
+        views: currentViews + 1,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id);
+
+    if (updateError) throw updateError;
+  },
+
   // 彻底删除工具（删除R2文件和数据库记录）
   async deleteTool(id: string): Promise<boolean> {
     // 获取工具信息

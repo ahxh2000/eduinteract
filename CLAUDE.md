@@ -10,7 +10,9 @@ EduInteract is an interactive educational tools platform built with Next.js 14 a
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
+- `npm run build:cloudflare` - Build for Cloudflare Pages deployment
 - `npm run start` - Start production server
+- `npm run preview` - Preview Cloudflare Pages build locally (wrangler pages dev)
 - `npm run lint` - Run ESLint
 
 ## Architecture
@@ -84,8 +86,40 @@ Hardcoded subject mapping in components (see `src/app/page.tsx:11-18`):
 - Uses `/api/tools` endpoint for tool data
 - Admin requests include `X-Request-Source: admin` header
 - Implements standard REST operations (GET, POST, PUT, DELETE)
+- Edge Runtime enabled for all API routes for Cloudflare compatibility
+- In-memory caching system for public requests (2-minute cache duration)
+- Admin requests bypass cache to ensure real-time data
+
+### API Structure
+The application includes several API endpoints:
+- `/api/tools` - Main tools endpoint with caching and admin support
+- `/api/tools/[id]` - Individual tool operations (GET, PUT, DELETE)
+- `/api/upload` - File upload handling
+- `/api/files` - File management operations
+- `/api/admin/login` - Admin authentication
+- `/api/admin/verify` - Admin session verification
+
+### Caching System
+- In-memory caching for public API requests (2-minute duration)
+- Cache bypassed for admin requests (`X-Request-Source: admin` header)
+- Automatic cache cleanup and invalidation
+- Cache keys based on subject filtering
+- DELETE endpoint available for manual cache clearing
+
+### Edge Runtime Configuration
+- All API routes use `export const runtime = 'edge'`
+- In-memory caching implemented for edge environment compatibility
+- External packages configured: `@supabase/supabase-js`
+- Cache cleanup and validation optimized for edge runtime constraints
 
 ## Development Notes
+
+### Cloudflare Pages Deployment
+- Project is configured for Cloudflare Pages deployment
+- Uses `@cloudflare/next-on-pages` adapter
+- Edge Runtime is enabled for all API routes (see `export const runtime = 'edge'`)
+- Image optimization is disabled (`unoptimized: true`) for Cloudflare compatibility
+- R2 storage bucket URLs need to be configured in `next.config.js`
 
 ### Styling
 - Uses Tailwind CSS for styling
@@ -96,6 +130,12 @@ Hardcoded subject mapping in components (see `src/app/page.tsx:11-18`):
 - UI text is in Chinese
 - Date formatting uses Chinese locale (`zh-CN`)
 - Subject labels are in Chinese
+
+### Storage Configuration
+- Uses AWS S3 SDK for file storage operations
+- Configured for Cloudflare R2 storage (compatibility mode)
+- File upload and management through dedicated API endpoints
+- Storage bucket URLs need configuration in `next.config.js`
 
 ### Pending Features
 Based on README.md, the following features are planned:

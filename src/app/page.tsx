@@ -51,7 +51,10 @@ function ToolCard({ tool }: { tool: Tool }) {
           {subjectInfo.label}
         </span>
       </div>
-      <p className="text-neutral-500 text-sm mb-6">{tool.description}</p>
+      <p className="text-neutral-500 text-sm mb-2">{tool.description}</p>
+      <div className="text-xs text-gray-400 mb-4">
+        浏览量：{tool.views || 0} 次
+      </div>
       <div className="flex justify-end">
         <Link 
           href={`/tool/${tool.id}`} 

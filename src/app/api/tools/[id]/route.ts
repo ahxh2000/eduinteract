@@ -10,6 +10,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+
+    // 首先增加浏览量
+    await toolService.incrementViews(id)
+
+    // 然后获取工具信息
     const tool = await toolService.getToolByIdAll(id)
     if (!tool) {
       return NextResponse.json({ error: '工具不存在' }, { status: 404 })

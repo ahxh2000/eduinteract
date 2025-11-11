@@ -4,12 +4,21 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
-// 添加 edge runtime 导出
-export const runtime = 'edge';
+// 移除 edge runtime，使用 Node.js 运行时以支持 Supabase
+// export const runtime = 'edge';
 
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const tool = await toolService.getToolById(id);
+
+  // 先增加浏览量，然后获取工具数据
+  try {
+    await toolService.incrementViews(id);
+  } catch (error) {
+    console.error('增加浏览量失败:', error);
+    // 即使浏览量增加失败，也继续显示页面
+  }
+
+  const tool = await toolService.getToolByIdAll(id);
 
   if (!tool) {
     return (
@@ -43,7 +52,10 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
                 )}
               </div>
             </div>
-            <p className="text-gray-600 text-lg mb-6">{tool.description}</p>
+            <p className="text-gray-600 text-lg mb-4">{tool.description}</p>
+            <div className="text-sm text-gray-500 mb-2">
+              浏览量：{tool.views || 0} 次
+            </div>
             <div className="text-sm text-gray-500">
               工具ID: {tool.id}
             </div>
