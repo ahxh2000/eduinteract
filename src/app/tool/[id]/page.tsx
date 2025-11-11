@@ -4,8 +4,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
-// 移除 edge runtime，使用 Node.js 运行时以支持 Supabase
-// export const runtime = 'edge';
+
+ export const runtime = 'edge';
 
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
