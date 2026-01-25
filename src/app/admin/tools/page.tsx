@@ -13,6 +13,7 @@ export default function AdminTools() {
   const [filtered, setFiltered] = useState<Tool[]>([])
   const [subject, setSubject] = useState('')
   const [status, setStatus] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState('') // 新增：搜索关键词------lmn
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [deleteId, setDeleteId] = useState<string|null>(null)
@@ -27,9 +28,15 @@ export default function AdminTools() {
     let result = tools
     if (subject) result = result.filter(t => t.subject === subject)
     if (status) result = result.filter(t => (status === 'active' ? t.is_active : !t.is_active))
+      if (searchKeyword) {//开始----lmn
+      result = result.filter(t => 
+        t.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+        t.description.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    }//增加的--------lmn
     setFiltered(result)
     setPage(1)
-  }, [tools, subject, status])
+  }, [tools, subject, status, searchKeyword])//, searchKeyword是lmn新增的。
 
   const fetchTools = async () => {
     setLoading(true)
@@ -92,6 +99,14 @@ export default function AdminTools() {
               >
                 上传工具
               </button>
+               {/* 搜索输入框-------lmn增加的 */}
+              <input
+                type="text"
+                placeholder="搜索工具..."
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                className="border rounded px-3 py-1 w-48 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
               <select value={subject} onChange={e=>setSubject(e.target.value)} className="border rounded px-2 py-1">
                 <option value="">全部学科</option>
                 <option value="math">数学</option>

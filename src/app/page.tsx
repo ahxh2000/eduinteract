@@ -3,6 +3,8 @@
 import React from "react";
 import { FaArrowRight, FaSearch, FaSlidersH, FaUpload } from "react-icons/fa";
 import Link from "next/link";
+import { useState, useEffect } from "react";//--------lmn增加的
+import { useSearchParams, useRouter } from "next/navigation";//--------lmn增加的
 import { Tool } from "@/types/database";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -40,7 +42,7 @@ function ToolCard({ tool }: { tool: Tool }) {
     label: tool.subject || "其他",
     color: "bg-gray-500/90"
   };
-  
+
   return (
     <div className="tool-card group bg-white rounded-xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-2 p-6">
       <div className="flex justify-between items-start mb-4">
@@ -56,8 +58,8 @@ function ToolCard({ tool }: { tool: Tool }) {
         浏览量：{tool.views || 0} 次
       </div>
       <div className="flex justify-end">
-        <Link 
-          href={`/tool/${tool.id}`} 
+        <Link
+          href={`/tool/${tool.id}`}
           className="view-tool px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-lg hover:bg-primary/20 transition-colors flex items-center"
         >
           查看工具 <FaArrowRight className="ml-2 text-xs" />
@@ -98,21 +100,45 @@ function SubscribeSection() {
 
 export default function Home() {
   const [selectedSubject, setSelectedSubject] = React.useState("all");
+  const [searchKeyword, setSearchKeyword] = React.useState(""); // 新增：搜索关键词-----lmn
   const [tools, setTools] = React.useState<Tool[]>([]);
   const [loading, setLoading] = React.useState(true);
+  //----------lmn增加的（头部搜索框）
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  // 从 URL 参数中读取搜索关键词
+  useEffect(() => {
+    const urlSearchKeyword = searchParams.get('search');
+    if (urlSearchKeyword) {
+      setSearchKeyword(decodeURIComponent(urlSearchKeyword));
+    }
+  }, [searchParams]);//-----结束
 
-  const filteredTools = selectedSubject === "all" ? tools : tools.filter(t => t.subject === selectedSubject);
+  // 修改过滤逻辑，同时考虑学科和搜索词---lmn
+  const filteredTools = tools.filter(tool => {
+    // 学科过滤---lmn
+    const subjectMatch = selectedSubject === "all" || tool.subject === selectedSubject;
+
+    /*const filteredTools = selectedSubject === "all" ? tools : tools.filter(t => t.subject === selectedSubject);*/
+
+    // 搜索词过滤----lmn
+    const keywordMatch = searchKeyword === "" ||
+      tool.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchKeyword.toLowerCase());
+    return subjectMatch && keywordMatch;
+  });
 
   // 加载工具数据
-  const loadTools = async (subject?: string) => {
+  const loadTools = async (subject?: string, keyword?: string) => {//, keyword?: string是增加的---lmn
     try {
       setLoading(true);
       const params = new URLSearchParams();
       if (subject && subject !== 'all') params.append('subject', subject);
+      if (keyword && keyword.trim() !== '') params.append('search', keyword.trim());//lmn------增加整行
 
       const response = await fetch(`/api/tools?${params.toString()}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setTools(data.tools);
       }
@@ -123,10 +149,18 @@ export default function Home() {
     }
   };
 
-  // 在useEffect中调用
+  // 在useEffect中调用-----lmn增加的
   React.useEffect(() => {
-    loadTools(selectedSubject);
-  }, [selectedSubject]);
+    loadTools(selectedSubject, searchKeyword);
+  }, [selectedSubject, searchKeyword]);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
+  const handleClearSearch = () => {
+    setSearchKeyword("");
+    // 清除 URL 中的搜索参数
+    router.push("/");
+  };//----------结束
 
   return (
     <div className="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
@@ -162,7 +196,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
+
         {/* 学科筛选和搜索 */}
         <section className="py-12 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -172,16 +206,31 @@ export default function Home() {
             </div>
             <SubjectFilter selected={selectedSubject} onSelect={setSelectedSubject} />
             {/* 搜索栏（静态，后续可加交互） */}
+            {/* 修改搜索栏部分------lmn*/}
             <div className="relative max-w-2xl mx-auto mb-12">
-              <input type="text" placeholder="搜索教学工具，如'函数图像绘制'、'电路模拟'..." className="w-full pl-12 pr-4 py-3 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary transition-all duration-200 text-base" />
-              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
-                <FaSlidersH className="text-lg" />
-              </div>
+              <form onSubmit={handleSearch}>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    placeholder="搜索教学工具，如'函数图像绘制'、'电路模拟'..."
+                    className="w-full pl-12 pr-4 py-3 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary transition-all duration-200 text-base"
+                  />
+                  <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 text-lg pointer-events-none" />
+                  <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full hover:bg-primary-600 transition-colors"
+                  >
+                    <FaSearch className="text-sm" />
+
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </section>
-        
+
         {/* 工具展示区 */}
         <section id="tools" className="py-12 bg-neutral-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -191,7 +240,7 @@ export default function Home() {
                 <p className="text-gray-600">正在加载工具...</p>
               </div>
             ) : filteredTools.length > 0 ? (
-              <div className="grid-masonry" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',gridGap:'1.5rem',gridAutoFlow:'dense'}}>
+              <div className="grid-masonry" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gridGap: '1.5rem', gridAutoFlow: 'dense' }}>
                 {filteredTools.map(tool => <ToolCard key={tool.id} tool={tool} />)}
               </div>
             ) : (
@@ -201,7 +250,7 @@ export default function Home() {
             )}
           </div>
         </section>
-        
+
         {/* 统计区块
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
