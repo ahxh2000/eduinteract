@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-EduInteract is an interactive educational tools platform built with Next.js 14 and React 18. It provides teachers and students with 120+ interactive educational tools across multiple subjects (math, physics, chemistry, biology, geography, history, Chinese, English). The platform includes both a public-facing interface for browsing tools and an admin backend for managing them.
+EduInteract is an interactive educational tools platform built with Next.js 15 and React 18. It provides teachers and students with 120+ interactive educational tools across multiple subjects (math, physics, chemistry, biology, geography, history, Chinese, English). The platform includes both a public-facing interface for browsing tools and an admin backend for managing them.
 
 ## Development Commands
 
@@ -18,10 +18,11 @@ EduInteract is an interactive educational tools platform built with Next.js 14 a
 ## Architecture
 
 ### Frontend Structure
-- **App Router**: Uses Next.js 14 app directory structure
+- **App Router**: Uses Next.js 15 app directory structure
 - **Components**: Located in `src/components/`
 - **Pages**: Admin routes in `src/app/admin/`, public routes in `src/app/`
 - **TypeScript**: Strict TypeScript configuration with database types in `src/types/database.ts`
+- **Path Alias**: `@/*` maps to `./src/*` for cleaner imports (configured in tsconfig.json)
 
 ### Key Features
 1. **Public Interface** (`src/app/page.tsx`):
@@ -54,9 +55,10 @@ interface Tool {
 ```
 
 ### Subject Configuration
-Hardcoded subject mapping in components (see `src/app/page.tsx:11-18`):
-- Colors and labels are defined locally, not stored in database
-- Subject keys: math, physics, chemistry, biology, geography, history, chinese, english, other
+Centralized subject mapping in `src/lib/subjectConfig.ts`:
+- Colors and labels are defined in `subjectConfig` export, not stored in database
+- Subject keys: math, physics, chemistry, biology, geography, history, chinese, english
+- Includes TypeScript type `SubjectKey` for type safety
 
 ### Admin Authentication
 - Uses `AdminAuth` component wrapper for admin routes
@@ -66,8 +68,8 @@ Hardcoded subject mapping in components (see `src/app/page.tsx:11-18`):
 
 ### Subject Handling
 - Database stores only subject keys (e.g., "math", "physics")
-- UI components map keys to display labels and colors
-- Subject configuration is hardcoded in frontend components
+- UI components use centralized `subjectConfig` from `src/lib/subjectConfig.ts` to map keys to display labels and colors
+- Components import `SubjectKey` type for type-safe subject references
 
 ### File Management
 - Tools have `file_url` pointing to hosted interactive tool files
@@ -111,6 +113,7 @@ The application includes several API endpoints:
 - In-memory caching implemented for edge environment compatibility
 - External packages configured: `@supabase/supabase-js`
 - Cache cleanup and validation optimized for edge runtime constraints
+- Supabase client configured with `persistSession: false` and `autoRefreshToken: false` for edge compatibility (see `src/lib/supabase.ts`)
 
 ## Development Notes
 
@@ -144,3 +147,15 @@ Based on README.md, the following features are planned:
 - Usage statistics and analytics
 - Operation logging
 - Tool approval workflow
+
+## Environment Variables
+
+Required environment variables (see `.env.example`):
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `R2_ACCOUNT_ID` - Cloudflare R2 account ID
+- `R2_ACCESS_KEY_ID` - R2 access key ID
+- `R2_SECRET_ACCESS_KEY` - R2 secret access key
+- `R2_BUCKET_NAME` - R2 bucket name
+- `FILE_BASE_URL` - Base URL for serving uploaded files
+- `ADMIN_PASSWORD` - Optional admin authentication password

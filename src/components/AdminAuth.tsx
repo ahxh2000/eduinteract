@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface AdminAuthProps {
@@ -12,13 +12,15 @@ export default function AdminAuth({ children }: AdminAuthProps) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
-    verifyToken()
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('adminLoggedIn')
+    localStorage.removeItem('adminUsername')
+    router.push('/admin/login')
   }, [router])
 
-  const verifyToken = async () => {
+  const verifyToken = useCallback(async () => {
     const token = localStorage.getItem('adminToken')
-    
+
     if (!token) {
       handleLogout()
       return
@@ -46,13 +48,11 @@ export default function AdminAuth({ children }: AdminAuthProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [handleLogout])
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminLoggedIn')
-    localStorage.removeItem('adminUsername')
-    router.push('/admin/login')
-  }
+  useEffect(() => {
+    verifyToken()
+  }, [verifyToken])
 
   if (loading) {
     return (

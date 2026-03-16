@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { FaArrowRight, FaSearch, FaSlidersH, FaUpload } from "react-icons/fa";
 import Link from "next/link";
-import { useState, useEffect } from "react";//--------lmn增加的
-import { useSearchParams, useRouter } from "next/navigation";//--------lmn增加的
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Tool } from "@/types/database";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -98,30 +98,26 @@ function SubscribeSection() {
   );
 }
 
-export default function Home() {
-  const [selectedSubject, setSelectedSubject] = React.useState("all");
-  const [searchKeyword, setSearchKeyword] = React.useState(""); // 新增：搜索关键词-----lmn
-  const [tools, setTools] = React.useState<Tool[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  //----------lmn增加的（头部搜索框）
+// 主内容组件（使用 useSearchParams）
+function HomeContent() {
+  const [selectedSubject, setSelectedSubject] = useState("all");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
   const router = useRouter();
+
   // 从 URL 参数中读取搜索关键词
   useEffect(() => {
     const urlSearchKeyword = searchParams.get('search');
     if (urlSearchKeyword) {
       setSearchKeyword(decodeURIComponent(urlSearchKeyword));
     }
-  }, [searchParams]);//-----结束
+  }, [searchParams]);
 
-  // 修改过滤逻辑，同时考虑学科和搜索词---lmn
+  // 修改过滤逻辑，同时考虑学科和搜索词
   const filteredTools = tools.filter(tool => {
-    // 学科过滤---lmn
     const subjectMatch = selectedSubject === "all" || tool.subject === selectedSubject;
-
-    /*const filteredTools = selectedSubject === "all" ? tools : tools.filter(t => t.subject === selectedSubject);*/
-
-    // 搜索词过滤----lmn
     const keywordMatch = searchKeyword === "" ||
       tool.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       tool.description.toLowerCase().includes(searchKeyword.toLowerCase());
@@ -129,12 +125,12 @@ export default function Home() {
   });
 
   // 加载工具数据
-  const loadTools = async (subject?: string, keyword?: string) => {//, keyword?: string是增加的---lmn
+  const loadTools = async (subject?: string, keyword?: string) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
       if (subject && subject !== 'all') params.append('subject', subject);
-      if (keyword && keyword.trim() !== '') params.append('search', keyword.trim());//lmn------增加整行
+      if (keyword && keyword.trim() !== '') params.append('search', keyword.trim());
 
       const response = await fetch(`/api/tools?${params.toString()}`);
       const data = await response.json();
@@ -149,24 +145,21 @@ export default function Home() {
     }
   };
 
-  // 在useEffect中调用-----lmn增加的
-  React.useEffect(() => {
+  useEffect(() => {
     loadTools(selectedSubject, searchKeyword);
   }, [selectedSubject, searchKeyword]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
   };
+
   const handleClearSearch = () => {
     setSearchKeyword("");
-    // 清除 URL 中的搜索参数
     router.push("/");
-  };//----------结束
+  };
 
   return (
-    <div className="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
-      {/* 导航栏 */}
-      <Header />
-
+    <>
       <main className="flex-grow">
         {/* 英雄区域 */}
         <section className="bg-gradient-to-br from-primary/5 to-primary/10 py-16 md:py-24">
@@ -205,8 +198,7 @@ export default function Home() {
               <p className="text-neutral-500 max-w-2xl mx-auto">我们提供覆盖多个学科的互动教学工具，帮助教师打造更具吸引力的课堂，激发学生的学习兴趣</p>
             </div>
             <SubjectFilter selected={selectedSubject} onSelect={setSelectedSubject} />
-            {/* 搜索栏（静态，后续可加交互） */}
-            {/* 修改搜索栏部分------lmn*/}
+            {/* 搜索栏 */}
             <div className="relative max-w-2xl mx-auto mb-12">
               <form onSubmit={handleSearch}>
                 <div className="relative">
@@ -223,7 +215,6 @@ export default function Home() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full hover:bg-primary-600 transition-colors"
                   >
                     <FaSearch className="text-sm" />
-
                   </button>
                 </div>
               </form>
@@ -251,26 +242,28 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 统计区块
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {stats.map(stat => (
-                <div className="p-6" key={stat.label}>
-                  <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{stat.value}</div>
-                  <div className="text-neutral-600">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-         */}
         {/* 订阅区块 */}
         <SubscribeSection />
       </main>
 
       {/* 页脚 */}
       <Footer />
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+      {/* 导航栏 */}
+      <Header />
+      <Suspense fallback={
+        <main className="flex-grow flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </main>
+      }>
+        <HomeContent />
+      </Suspense>
     </div>
   );
 }

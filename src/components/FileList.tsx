@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface FileItem {
   key: string;
@@ -18,11 +18,7 @@ export default function FileList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchFiles();
-  }, [currentPage]);
-
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/files?page=${currentPage}&limit=${ITEMS_PER_PAGE}`);
@@ -37,7 +33,11 @@ export default function FileList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
 
   if (loading) {
     return (
